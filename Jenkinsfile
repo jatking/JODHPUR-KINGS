@@ -3,7 +3,6 @@
 def utils = new io.fabric8.Utils()
 clientsNode{
   def envStage = utils.environmentNamespace('stage')
-  def envProd = utils.environmentNamespace('run')
   def newVersion = ''
 
   checkout scm
@@ -24,16 +23,6 @@ clientsNode{
   }
 
   stage('Rollout to Stage')
+  def envStage = environmentNamespace("stage")
   kubernetesApply(file: rc, environment: envStage)
-
-  stage('Approve')
-  approve{
-    room = null
-    version = canaryVersion
-    console = fabric8Console
-    environment = envStage
-  }
-
-  stage('Rollout to Run')
-  kubernetesApply(file: rc, environment: envProd)
 }
